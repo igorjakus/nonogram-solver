@@ -4,8 +4,8 @@ from nonograms import is_solved
 from nonograms import deduction, generate_possibilities, cross_out
 from nonograms import matrix_to_output
 
-"""Będziemy macierz wypełniać liczbami 1 (na pewno zamazane pole), oraz 0 (na pewno puste pole).
-Na początku mamy macierz height x width wypełnioną samymi -1."""
+"""We will fill the matrix with numbers 1 (definitely filled cell) and 0 (definitely empty cell).
+At the beginning, we have a height x width matrix filled with -1."""
 
 
 def solve(input: str):
@@ -13,25 +13,25 @@ def solve(input: str):
 
 
 def process_input(input):
-    """Bierze input i przetwarza na odpowiednie§ wartości w polach:
-    - matrix to dotychczasowe rozwiazanie
-    - hint_rows/cols przechowuje dane nam hinty
-    - rows/cols_estimation to estymacja dla kazdego wiersza/kolumny ile potrzeba ruchow zeby naprawic"""
-    tab = input.split("\n")[:-1]  # usuwamy \n z końca
+    """Takes the input and processes it into appropriate fields:
+    - matrix is the current solution
+    - hint_rows/cols stores the given hints
+    - rows/cols_estimation is an estimation for each row/column of how many moves are needed to solve"""
+    tab = input.split("\n")[:-1]  # remove \n from the end
     height, width = map(int, tab[0].split(" "))
 
     global hint_rows
     global hint_cols
 
-    # wskazowki podane w inpucie, przesuwamy o 1 bo odczytaliśmy już width i height
+    # hints given in the input, shift by 1 because we have already read width and height
     hint_rows = [[int(y) for y in x.split(" ")] for x in tab[1 : height + 1]]
     hint_cols = [[int(y) for y in x.split(" ")] for x in tab[height + 1 :]]
 
-    # inicjalizacja macierzy
+    # initialize the matrix
     matrix = [[-1 for __ in range(width)] for __ in range(height)]
 
-    # policz możliwości dla każdego wiersza i każdej kolumny
-    # trochę wolne ale mamy max. 25 x 25 więc powinno być OK
+    # calculate possibilities for each row and each column
+    # a bit slow but we have max. 25 x 25 so it should be OK
     row_possibilities = {
         r: generate_possibilities(width, hint) for r, hint in enumerate(hint_rows)
     }
@@ -42,7 +42,7 @@ def process_input(input):
 
 
 def ac3(matrix, row_possibilities, col_possibilities):
-    """Rozwiązujemy algorytmem ac3, zadanie 1"""
+    """Solve using the AC3 algorithm, task 1"""
     to_check = deque(
         [("r", r) for r in range(len(matrix))]
         + [("c", c) for c in range(len(matrix[0]))]
@@ -55,9 +55,9 @@ def ac3(matrix, row_possibilities, col_possibilities):
         else:
             possibilities = col_possibilities[index]
 
-        # jak jest zero możliwości to trzeba porzucić tą ścieżkę
+        # if there are zero possibilities, abandon this path
         if not possibilities:
-            raise IndexError("Nie może być zero możliwości!")
+            raise IndexError("There cannot be zero possibilities!")
 
         conclusions = deduction(possibilities)
 
@@ -76,7 +76,7 @@ def ac3(matrix, row_possibilities, col_possibilities):
 
 
 def backtrack(matrix, row_possibilities, col_possibilities):
-    # Wydedukuj co się da
+    # Deduce what can be deduced
     try:
         ac3(matrix, row_possibilities, col_possibilities)
     except IndexError:
@@ -85,9 +85,9 @@ def backtrack(matrix, row_possibilities, col_possibilities):
     for r in range(len(matrix)):
         for c in range(len(matrix[0])):
             if matrix[r][c] == -1:
-                # Rekurencja - jeżeli mamy pozostałe pixele do wydedukowania to weź jeden z nich,
-                # zamaż i sprawdź czy działa. Jeżeli nie to musi być tam 0 i dedukuj dalej.
-                new_matrix = deepcopy(matrix)  # DEEPCOPY INACZEJ NIE DZIALA ......
+                # Recursion - if we have remaining pixels to deduce, take one of them,
+                # fill it and check if it works. If not, it must be 0 and deduce further.
+                new_matrix = deepcopy(matrix)  # DEEPCOPY OTHERWISE IT DOESN'T WORK......
                 new_row_poss = row_possibilities.copy()
                 new_col_poss = col_possibilities.copy()
                 new_matrix[r][c] = 1
@@ -103,7 +103,7 @@ def backtrack(matrix, row_possibilities, col_possibilities):
                 cross_out(col_possibilities, c, r, 0)
                 return backtrack(matrix, row_possibilities, col_possibilities)
 
-    # Jeżeli nie ma żadnych pixeli niepewnych
+    # If there are no uncertain pixels
     if is_solved(matrix, hint_rows, hint_cols):
         return matrix
     return False

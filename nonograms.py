@@ -23,7 +23,7 @@ def generate_possibilities(row_length: int, hints: list):
 
 
 def deduction(possibilities):
-    """Jeżeli w każdym wariancie na i-tej pozycji jest val to na i-tej pozycji musi być val"""
+    """If in every variant at the i-th position there is a value, then at the i-th position it must be that value"""
     sure = {}
     for i in range(len(possibilities[0])):
         v = possibilities[0][i]
@@ -33,8 +33,8 @@ def deduction(possibilities):
 
 
 def cross_out(possibilities: list, index: int, bit: int, new_value: int):
-    """Wykreśla z ORYGINALNEJ LISTY POSSIBILITIES, te które nie spełniają
-    nowowydedukowanych wartości."""
+    """Cross out from the ORIGINAL LIST OF POSSIBILITIES those that do not meet
+    the newly deduced values."""
     possibilities[index] = list(filter(lambda xs: xs[bit] == new_value, possibilities[index]))
 
 
@@ -71,7 +71,7 @@ def is_solved(matrix, hints_rows, hints_cols):
 
 
 def matrix_to_output(matrix):
-    """Zamienia macierz będącą rozwiązaniem na odpowiedni obrazek jak w sprawdzaczce"""
+    """Converts the solution matrix into the appropriate picture format as in the checker"""
     out = ""
     for row in matrix:
         for x in row:
@@ -86,25 +86,25 @@ def matrix_to_output(matrix):
 
 
 def process_input(input):
-    """Bierze input i przetwarza na odpowiednie wartości w polach:
-    - matrix to dotychczasowe rozwiazanie
-    - hint_rows/cols przechowuje dane nam hinty
-    - rows/cols_estimation to estymacja dla kazdego wiersza/kolumny ile potrzeba ruchow zeby naprawic"""
-    tab = input.split("\n")[:-1]  # usuwamy \n z końca
+    """Takes the input and processes it into appropriate fields:
+    - matrix is the current solution
+    - hint_rows/cols stores the given hints
+    - rows/cols_estimation is an estimation for each row/column of how many moves are needed to solve"""
+    tab = input.split("\n")[:-1]  # remove \n from the end
     height, width = map(int, tab[0].split(" "))
 
     global hint_rows
     global hint_cols
 
-    # wskazowki podane w inpucie, przesuwamy o 1 bo odczytaliśmy już width i height
+    # hints given in the input, shift by 1 because we have already read width and height
     hint_rows = [[int(y) for y in x.split(" ")] for x in tab[1 : height + 1]]
     hint_cols = [[int(y) for y in x.split(" ")] for x in tab[height + 1 :]]
 
-    # inicjalizacja macierzy
+    # initialize the matrix
     matrix = [[-1 for __ in range(width)] for __ in range(height)]
 
-    # policz możliwości dla każdego wiersza i każdej kolumny
-    # trochę wolne ale mamy max. 25 x 25 więc powinno być OK
+    # calculate possibilities for each row and each column
+    # a bit slow but we have max. 25 x 25 so it should be OK
     row_possibilities = {
         r: generate_possibilities(width, hint) for r, hint in enumerate(hint_rows)
     }
