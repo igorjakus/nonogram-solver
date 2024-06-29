@@ -1,5 +1,5 @@
 # nonogram-solver
-Solving nonograms using AC3 with backtracking
+During an Artificial Intelligence class, I developed two distinct solvers for nonogram puzzles: one using the AC-3 algorithm and the other using WalkSAT. Additionally, I created a third version in OCaml that generates all possibilities and identifies the correct solution, although the former two are significantly faster.
 
 ## [Nonograms](https://www.puzzle-nonograms.com/)
 
