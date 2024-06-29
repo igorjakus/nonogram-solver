@@ -83,32 +83,3 @@ def matrix_to_output(matrix):
                 out += "?"
         out += "\n"
     return out
-
-
-def process_input(input):
-    """Takes the input and processes it into appropriate fields:
-    - matrix is the current solution
-    - hint_rows/cols stores the given hints
-    - rows/cols_estimation is an estimation for each row/column of how many moves are needed to solve"""
-    tab = input.split("\n")[:-1]  # remove \n from the end
-    height, width = map(int, tab[0].split(" "))
-
-    global hint_rows
-    global hint_cols
-
-    # hints given in the input, shift by 1 because we have already read width and height
-    hint_rows = [[int(y) for y in x.split(" ")] for x in tab[1 : height + 1]]
-    hint_cols = [[int(y) for y in x.split(" ")] for x in tab[height + 1 :]]
-
-    # initialize the matrix
-    matrix = [[-1 for __ in range(width)] for __ in range(height)]
-
-    # calculate possibilities for each row and each column
-    # a bit slow but we have max. 25 x 25 so it should be OK
-    row_possibilities = {
-        r: generate_possibilities(width, hint) for r, hint in enumerate(hint_rows)
-    }
-    col_possibilities = {
-        c: generate_possibilities(height, hint) for c, hint in enumerate(hint_cols)
-    }
-    return matrix, row_possibilities, col_possibilities
