@@ -1,8 +1,8 @@
 from collections import deque
 from copy import deepcopy
-from nonograms import is_solved
-from nonograms import deduction, generate_possibilities, cross_out
-from nonograms import matrix_to_output
+from ac3.nonograms import is_solved
+from ac3.nonograms import deduction, generate_possibilities, cross_out
+from ac3.nonograms import matrix_to_output
 
 """We will fill the matrix with numbers 1 (definitely filled cell) and 0 (definitely empty cell).
 At the beginning, we have a height x width matrix filled with -1."""
